@@ -2,7 +2,8 @@
 
 namespace App\Services\Common;
 
-ini_set("soap.wsdl_cache_enabled", WSDL_CACHE_NONE);
+// ini_set("soap.wsdl_cache_enabled", WSDL_CACHE_NONE);
+ini_set("soap.wsdl_cache_enabled", 0);
 use Illuminate\Support\Facades\Log;
 
 abstract class SoapService
