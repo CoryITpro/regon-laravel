@@ -18,6 +18,8 @@ class ValidationPaymentController extends Controller
 
         $user_id = Auth::id();
         $user =  User::find( $user_id );
+        $user->premium = date("Y-m-d");
+        $user->save();
         $res = [ 'nip' => $user->nip ];
 
         $company = $regonService->searchRecord($res);

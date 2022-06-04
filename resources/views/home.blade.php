@@ -46,6 +46,7 @@
                                         <div class="clearfix"></div>
                                         <br>
                                         <h3>Payment</h3>
+                                        @if ($purchasable)
                                         <form class="border p-4" action="{{ route('make-payment') }}" method="POST">
                                             @csrf
                                             <div class="mb-5">
@@ -54,6 +55,9 @@
                                             </div>
                                             <input type="submit" name="im_paying" class="btn btn-primary float-right" value="I'm Paying">
                                         </form>
+                                        @else
+                                            <b>You have a premium account and not expired</b>
+                                        @endif
 
                                 </div>
                             </div>

@@ -155,7 +155,7 @@
         </div>
         <div class="form-group">
             <label for="premium">Premium</label>
-            <input type="input" class="form-control" id="premium" name="premium">
+            <input type="date" class="form-control" id="premium" name="premium">
         </div>
 
         <div class="form-group">
