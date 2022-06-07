@@ -20,11 +20,11 @@ class CheckNipController extends Controller
         $res = ['nip' => Arr::get($data, 'nip')];
         $result = $regonService->searchRecord($data);
         $resource = is_array($result) ? $result : null;
-
+// dd($result);
         if (Arr::get($data, 'check_company')) {
             if ($resource) {
                 //
-                //dd($resource);
+                // dd($resource);
                 $res += ['message' => __('regon.nip_entity_found',[
                     'nazwa' => $resource["nazwa"],
                     'address' => $resource["address"],

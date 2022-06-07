@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Mail\AccountVerificationFailed;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Services\RegonService;
 use App\Rules\CheckNipPkdRule;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -41,6 +46,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->regonService = app()->make(RegonService::class);
     }
 
     /**
@@ -52,7 +58,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            //'nip' => ['required', 'unique:users', 'digits:10', new CheckNipPkdRule()],
+            'nip' => ['required', 'unique:users', 'digits:10'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -72,6 +78,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'verified' => true
         ]);
     }
 
@@ -88,5 +95,40 @@ class RegisterController extends Controller
             'nazwa' => session('registration.nazwa'),
             'address' => session('registration.address'),
         ]));
+    }
+
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+        if ( ! $this->regonService->searchRecord(['nip' => $request->nip])) {
+
+            Mail::to($request->email)->send(new AccountVerificationFailed([
+                'name' => $request->name,
+                'nip'   =>$request->nip,
+                'email' => $request->email
+            ]));
+
+            return redirect('login')->withErrors('Verification is ongoing. We will contact your office to confirm the data.');
+        }
+
+        $this->guard()->login($user);
+
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+                    ? new JsonResponse([], 201)
+                    : redirect($this->redirectPath());
     }
 }

@@ -57,6 +57,8 @@
                                         </form>
                                         @else
                                             <b>You have a premium account and not expired</b>
+                                            <br />
+                                            <b>Expiry Date: {{ $expire_date->format('Y-m-d') }}</b>
                                         @endif
 
                                 </div>
@@ -79,4 +81,3 @@
         $("#opinion-form").multiStepForm({}).navigateTo(0);
     </script>
 @endsection
-

@@ -10,7 +10,7 @@ use App\Models\Opinion;
 
 class ViewUserController extends Controller
 {
-   
+
 
     public function __invoke(){
 
@@ -19,7 +19,7 @@ class ViewUserController extends Controller
         return view('users.viewusers')
             ->with('users', $users);
     }
- 
+
     public function edituser(Request $r1){
 
     	$user = User::find($r1->id);
@@ -27,24 +27,24 @@ class ViewUserController extends Controller
     	if (isset($r1->password)){
     		$validated = $r1->validate([
         		'email' => 'required|email|min:4|max:255',
-        		'name' => 'required|min:4|max:50',
+        		'name' => 'required|min:1|max:50',
         		'password' => 'min:3|max:15',
-    		    'verified' => 'required',
+    		    // 'verified' => 'required',
 	    	]);
     	}else {
     		$validated = $r1->validate([
         		'email' => 'required|email|min:4|max:255',
-        		'name' => 'required|min:4|max:50',
-    		    'verified' => 'required',
-    		    'premium' => 'required',
-    
+        		'name' => 'required|min:1|max:50',
+    		    // 'verified' => 'required',
+    		    // 'premium' => 'required',
+
 	    	]);
     	}
-    	
+
     	if ($validated){
 
     		$user->email = $r1->email;
-    		$user->verified = $r1->verified;
+    		$user->verified = $r1->verified ? true: false;
     		$user->name = $r1->name;
     		$user->premium = $r1->premium;
     		if (isset($r1->password)){
@@ -61,7 +61,7 @@ class ViewUserController extends Controller
     public function premiumuser(Request $r1){
 
     	$user = User::find($r1->id);
-    	 
+
     	$ratings = Rating::where([['id_user', '=', $r1->id ],])->get();
     	$opinions = Opinion::where([['user_id', '=', $r1->id ],])->get();
 

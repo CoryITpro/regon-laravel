@@ -40,14 +40,14 @@ class CheckNipPkdRule implements Rule
                 Arr::get($record, 'regon'),
                 Arr::get($record, 'silosID')
             );
-
-            if (is_array($pkds) AND in_array(self::KEY_PKD, $pkds)) {
+// dd($pkds);
+//             if (is_array($pkds) AND in_array(self::KEY_PKD, $pkds)) {
                 session([
                     'registration.nazwa' => $record['name'],
                     'registration.address' => $record['address']
                 ]);
                 return true;
-            }
+            // }
         }
 
         $this->sendMailToSupport();
@@ -70,7 +70,7 @@ class CheckNipPkdRule implements Rule
         $email = request()->get('email');
         $nip   = request()->get('nip');
 
-        Mail::to(config('support.email'), config('support.name'))
+        Mail::to($email)
             ->send(new AccountVerificationFailed(compact('name', 'email', 'nip')));
     }
 }

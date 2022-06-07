@@ -26,9 +26,11 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $expire_date = null;
         if ($user->premium) {
             $premium_date = new Carbon($user->premium);
             $today = Carbon::today();
+            $expire_date = $premium_date->addDays(183);
             $diffInDays = $today->diffInDays($premium_date);
             if ($diffInDays > 183) {
                 $user->premium = null;
@@ -42,6 +44,6 @@ class HomeController extends Controller
             $purchasable = true;
         }
 
-        return view('home')->with(compact('user', 'purchasable'));
+        return view('home')->with(compact('user', 'purchasable', 'expire_date'));
     }
 }

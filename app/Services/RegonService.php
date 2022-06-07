@@ -100,19 +100,26 @@ class RegonService extends SoapService
         $search_param = new \SoapVar(
             array($nip), SOAP_ENC_OBJECT, '', self::XML_SOAP_ENCODING, 'pParametryWyszukiwania', config('regon.api.uri'));
 
-        try {
+        // try {
             $response = $this->provider($method, $search_param, $action);
             $xml = new SimpleXMLElement($response);
             $error = $xml->xpath("//root/dane/ErrorCode");
             if ($error) {
                 return null;
             } else {
-                return $this->parseSearchResult($xml);
+                // return $this->parseSearchResult($xml);
+                $res = $this->parseSearchResult($xml);
+                $res['nazwa'] = str_replace(' XXXXXXXX', '', $res['nazwa']);
+                // dd($res['nazwa']);
+                $res['nazwa'] = str_replace('""', '', $res['nazwa']);
+                $res['name'] = str_replace(' XXXXXXXX', '', $res['name']);
+                $res['name'] = str_replace('""', '', $res['name']);
+                return $res;
             }
-        } catch (\Throwable $th) {
-            Log::error('Error in regon service searching function:' . $th);
-            return null;
-        }
+        // } catch (\Throwable $th) {
+        //     Log::error('Error in regon service searching function:' . $th);
+        //     return null;
+        // }
     }
 
     public function parseSearchResult(SimpleXMLElement $response): array
